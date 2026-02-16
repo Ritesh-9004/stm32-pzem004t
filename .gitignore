@@ -1,0 +1,32 @@
+# STM32CubeIDE
+Debug/
+Release/
+.settings/
+.cproject
+.project
+.mxproject
+
+# Build outputs
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.su
+*.d
+*.o
+
+# Temporary files
+*.swp
+*.bak
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE files
+*.launch
+.vscode/
+.idea/
