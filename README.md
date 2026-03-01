@@ -33,6 +33,7 @@ A complete STM32 HAL library for interfacing with the PZEM-004T v4.0 AC power/en
 
 - **Microcontroller:** STM32F103C8T6 (Blue Pill) or any STM32 with HAL support
 - **Module:** PZEM-004T v4.0 (TTL UART version)
+- **Module:** PZEM-004T v4.0 (TTL UART version)
 - **AC Load:** Connected to PZEM (required for valid readings)
 - **USB-to-TTL adapter:** For debug output (optional)
 
