@@ -1,6 +1,18 @@
-# STM32 PZEM-004T v3.0 Library
+<div align="center">
 
-A complete STM32 HAL library for interfacing with the PZEM-004T v3.0 AC power/energy monitoring module using Modbus RTU protocol over UART.
+# STM32 PZEM-004T v4.0 Library
+
+![Platform](https://img.shields.io/badge/Platform-STM32-blue?logo=stmicroelectronics)
+![Language](https://img.shields.io/badge/Language-C-00599C?logo=c)
+![HAL](https://img.shields.io/badge/HAL-Driver-green)
+![Protocol](https://img.shields.io/badge/Protocol-Modbus_RTU-orange)
+![Module](https://img.shields.io/badge/Module-PZEM--004T_v4.0-red)
+
+
+</div>
+
+---
+A complete STM32 HAL library for interfacing with the PZEM-004T v4.0 AC power/energy monitoring module using Modbus RTU protocol over UART.
 
 ## Features
 
@@ -20,7 +32,7 @@ A complete STM32 HAL library for interfacing with the PZEM-004T v3.0 AC power/en
 ## Hardware Requirements
 
 - **Microcontroller:** STM32F103C8T6 (Blue Pill) or any STM32 with HAL support
-- **Module:** PZEM-004T v3.0 (TTL UART version)
+- **Module:** PZEM-004T v4.0 (TTL UART version)
 - **AC Load:** Connected to PZEM (required for valid readings)
 - **USB-to-TTL adapter:** For debug output (optional)
 
@@ -33,8 +45,8 @@ STM32 (USART3)         PZEM-004T
 ─────────────────────────────────
 PB10 (TX)      →       RX
 PB11 (RX)      ←       TX
+5V             →       5V (Required)
 GND            ─       GND
-                       5V (from PZEM, not STM32!)
 ```
 
 ### Debug Output (Optional)
@@ -210,7 +222,7 @@ Polling every 500 ms...
 
 ### Modbus RTU Protocol
 
-The PZEM-004T v3.0 uses Modbus RTU over UART:
+The PZEM-004T v4.0 uses Modbus RTU over UART:
 - **Baud rate:** 9600
 - **Data format:** 8N1 (8 data bits, no parity, 1 stop bit)
 - **CRC:** CRC16-Modbus (polynomial 0xA001)
@@ -274,23 +286,16 @@ stm32-pzem004t/
 └── stm32-pzem.ioc              ← STM32CubeMX project
 ```
 
-## License
-
-This project is released into the public domain. Feel free to use, modify, and distribute as needed.
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
 ## References
 
-- [PZEM-004T v3.0 Datasheet](https://innovatorsguru.com/wp-content/uploads/2019/06/PZEM-004T-V3.0-Datasheet-User-Manual.pdf)
-- [Modbus Protocol Specification](https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf)
 - [STM32F103 HAL Documentation](https://www.st.com/resource/en/user_manual/um1850-description-of-stm32f1-hal-and-lowlayer-drivers-stmicroelectronics.pdf)
+- PZEM-004T Datasheet (Available from module vendor)
+- Modbus RTU Protocol Documentation (Available from modbus.org)
 
-## Author
-
-Created with ❤️ for the STM32 community
 
 ---
 
