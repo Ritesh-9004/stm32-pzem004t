@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-04
+
+### Added
+- Startup PZEM address verification with configurable retry attempts
+- Automatic energy counter reset on boot for per-session tracking
+- Read retry logic (configurable attempts per poll cycle)
+- Consecutive failure counter for communication diagnostics
+- IWDG hardware watchdog timer (~4 second auto-recovery)
+- UART error flag clearing (ORE, NE, FE, PE) to prevent permanent RX stalls
+- Modbus error response detection (function code 0x84 handling)
+
+### Removed
+- Unused `#include <math.h>` from pzem004t.c
+- Unused `stm_firmware.h` binary blob
+- Web-only files not needed for the library (sitemap.xml, CITATION.cff)
+
+### Fixed
+- UART receive could permanently stop working if overrun/framing errors occurred
+- No diagnostic info when PZEM returned Modbus error frames
+
 ## [1.0.0] - 2026-03-01
 
 ### Added

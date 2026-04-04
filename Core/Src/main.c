@@ -41,6 +41,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define POLL_INTERVAL 500  // Poll PZEM every 500ms (2 Hz update rate)
+#define MAX_RETRIES   3    // Retry count for failed PZEM reads
+#define STARTUP_ATTEMPTS 5 // Attempts to detect PZEM on boot
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -123,6 +125,41 @@ int main(void)
   // Initialize PZEM
   PZEM_Init(&pzem, &huart3, 0x01);
   printf("PZEM initialized\r\n");
+  
+  // Startup: verify PZEM is responding at address 0x01
+  printf("Checking PZEM at address 0x%02X...\r\n", pzem.addr);
+  bool pzem_found = false;
+  for (uint8_t attempt = 1; attempt <= STARTUP_ATTEMPTS; attempt++) {
+      if (PZEM_ReadAll(&pzem)) {
+          printf("PZEM detected on attempt %d! Voltage: %.1fV\r\n", attempt, PZEM_Voltage(&pzem));
+          pzem_found = true;
+          break;
+      }
+      printf("  Attempt %d/%d failed, retrying...\r\n", attempt, STARTUP_ATTEMPTS);
+      HAL_Delay(500);
+  }
+  
+  if (!pzem_found) {
+      printf("WARNING: PZEM not responding! Check wiring and address.\r\n");
+  }
+  
+  // Reset energy counter on startup for per-session tracking
+  if (pzem_found) {
+      if (PZEM_ResetEnergy(&pzem)) {
+          printf("Energy counter reset to 0\r\n");
+      } else {
+          printf("WARNING: Energy reset failed\r\n");
+      }
+  }
+  
+  // Start Independent Watchdog (IWDG) — ~4 second timeout
+  // LSI ~40kHz, prescaler /64 = 625 Hz, reload 2500 = 4 sec
+  IWDG->KR  = 0x5555;  // Enable write access
+  IWDG->PR  = 4;       // Prescaler /64
+  IWDG->RLR = 2500;    // Reload value
+  IWDG->KR  = 0xCCCC;  // Start IWDG
+  printf("Watchdog started (~4s timeout)\r\n");
+  
   printf("Polling every %d ms...\r\n\r\n", POLL_INTERVAL);
 
   /* USER CODE END 2 */
@@ -130,6 +167,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint32_t lastPoll = 0;
+  uint32_t consecutiveFails = 0;
   
   while (1)
   {
@@ -142,8 +180,18 @@ int main(void)
     if (now - lastPoll >= POLL_INTERVAL) {
         lastPoll = now;
         
-        // Read all PZEM values in ONE transaction (now using proven polling method)
-        if (PZEM_ReadAll(&pzem)) {
+        // Read all PZEM values with retry logic
+        bool read_ok = false;
+        for (uint8_t retry = 0; retry < MAX_RETRIES; retry++) {
+            if (PZEM_ReadAll(&pzem)) {
+                read_ok = true;
+                break;
+            }
+        }
+        
+        if (read_ok) {
+            consecutiveFails = 0;
+            
             // Parse cached values (no additional blocking)
             float voltage = PZEM_Voltage(&pzem);
             float current = PZEM_Current(&pzem);
@@ -156,9 +204,14 @@ int main(void)
             printf("[%lu ms] Voltage: %.1fV | Current: %.3fA | Power: %.1fW | Energy: %.3fkWh | Freq: %.1fHz | PF: %.2f\r\n", 
                    now, voltage, current, power, energy, frequency, pf);
         } else {
-            printf("[%lu ms] PZEM Read FAILED\r\n", now);
+            consecutiveFails++;
+            printf("[%lu ms] PZEM Read FAILED after %d retries (consecutive failures: %lu)\r\n", 
+                   now, MAX_RETRIES, consecutiveFails);
         }
     }
+    
+    // Feed watchdog — must be called within ~4s or MCU resets
+    IWDG->KR = 0xAAAA;
   }
   /* USER CODE END 3 */
 }

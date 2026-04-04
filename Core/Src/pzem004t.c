@@ -1,7 +1,6 @@
 /* PZEM004T v3.0 Library Implementation for STM32 HAL */
 #include "pzem004t.h"
 #include <string.h>
-#include <math.h>
 
 #define RESPONSE_SIZE 25
 #define READ_TIMEOUT 200  // Fast timeout (PZEM responds in ~30ms at 9600 baud)
@@ -30,6 +29,13 @@ static bool sendReceive(PZEM_t *pzem, uint8_t *sendBuffer, uint8_t sendSize,
 #if PZEM_DEBUG
     extern int printf(const char *format, ...);
 #endif
+    
+    // Clear UART error flags (ORE, NE, FE, PE) — if not cleared, RX can permanently stop
+    if (pzem->huart->Instance->SR & (USART_SR_ORE | USART_SR_NE | USART_SR_FE | USART_SR_PE)) {
+        volatile uint8_t dummy = pzem->huart->Instance->SR;
+        dummy = pzem->huart->Instance->DR;
+        (void)dummy;
+    }
     
     // Clear RX buffer by reading any stale data
     while (pzem->huart->Instance->SR & USART_SR_RXNE) {
@@ -91,6 +97,14 @@ static bool sendReceive(PZEM_t *pzem, uint8_t *sendBuffer, uint8_t sendSize,
     }
     printf("\r\n");
 #endif
+    
+    // Check for Modbus error response (function code has bit 7 set, e.g., 0x84)
+    if (bytesReceived >= 5 && (recvBuffer[1] & 0x80)) {
+#if PZEM_DEBUG
+        printf("MODBUS ERROR: func=0x%02X code=0x%02X\r\n", recvBuffer[1], recvBuffer[2]);
+#endif
+        return false;
+    }
     
     if (bytesReceived < recvSize) {
 #if PZEM_DEBUG

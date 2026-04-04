@@ -1,18 +1,40 @@
 <div align="center">
 
 # STM32 PZEM-004T v4.0 Library
+### Lightweight AC Energy Meter Interface for STM32 using Modbus RTU
 
 ![Platform](https://img.shields.io/badge/Platform-STM32-blue?logo=stmicroelectronics)
 ![Language](https://img.shields.io/badge/Language-C-00599C?logo=c)
 ![HAL](https://img.shields.io/badge/HAL-Driver-green)
 ![Protocol](https://img.shields.io/badge/Protocol-Modbus_RTU-orange)
 ![Module](https://img.shields.io/badge/Module-PZEM--004T_v4.0-red)
+![Version](https://img.shields.io/badge/Version-1.1.0-brightgreen)
 
 
 </div>
 
 ---
-A complete STM32 HAL library for interfacing with the PZEM-004T v4.0 AC power/energy monitoring module using Modbus RTU protocol over UART.
+A complete STM32 HAL library for interfacing with the PZEM-004T v4.0 AC power/energy monitoring module using Modbus RTU protocol over UART. Works with STM32CubeIDE and any STM32 microcontroller with HAL support.
+
+This repository provides a production-ready STM32F103C8T6 (Blue Pill) energy meter interface for PZEM-004T, including UART communication, Modbus RTU parsing, AC voltage/current/power/energy monitoring, hardware watchdog, error recovery, and embedded C firmware for STM32CubeIDE projects. An alternative to Arduino-based PZEM libraries for professional embedded applications.
+
+**Keywords:** STM32 PZEM-004T, STM32F103 energy meter, Blue Pill power monitor, PZEM-004T v4.0 STM32 library, Modbus RTU STM32, UART energy meter, AC power monitoring embedded C, STM32CubeIDE PZEM, STM32 HAL PZEM library, IoT power monitor, Arduino PZEM alternative STM32, electricity meter STM32, watt meter microcontroller.
+
+## Table of Contents
+
+- [Features](#features)
+- [Hardware Requirements](#hardware-requirements)
+- [Wiring Diagram](#wiring-diagram)
+- [Circuit Diagram](#circuit-diagram)
+- [Software Requirements](#software-requirements)
+- [Getting Started](#getting-started)
+- [API Reference](#api-reference)
+- [Example Output](#example-output)
+- [Technical Details](#technical-details)
+- [Troubleshooting](#troubleshooting)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [References](#references)
 
 ## Features
 
@@ -24,10 +46,17 @@ A complete STM32 HAL library for interfacing with the PZEM-004T v4.0 AC power/en
 - ✅ Read power factor
 - ✅ Reset energy counter
 - ✅ Modbus RTU protocol with CRC16 verification
+- ✅ UART error recovery (ORE, NE, FE, PE flag handling)
+- ✅ Modbus error response detection
+- ✅ Startup device verification with retry
+- ✅ Read retry logic with consecutive failure tracking
+- ✅ IWDG hardware watchdog (~4s auto-recovery)
 - ✅ Efficient register polling for reliable communication
 - ✅ Non-blocking operation with configurable poll intervals
 - ✅ Debug output via UART
 - ✅ Clean and simple API
+- ✅ No external dependencies beyond STM32 HAL
+- ✅ Works with STM32CubeIDE, Keil, and IAR
 
 ## Hardware Requirements
 
@@ -282,8 +311,9 @@ stm32-pzem004t/
 │       ├── pzem004t.c           ← Library implementation
 │       └── stm32f1xx_hal_msp.c
 ├── Drivers/                     ← STM32 HAL drivers
+├── CHANGELOG.md
 ├── README.md
-└── stm32-pzem.ioc              ← STM32CubeMX project
+└── stm_code.ioc                 ← STM32CubeMX project
 ```
 
 ## Contributing
