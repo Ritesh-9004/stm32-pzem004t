@@ -109,7 +109,7 @@ N  ─  AC Neutral
 
 ## Circuit Diagram
 
-![Circuit Diagram](docs/stm32-pzem004t.svg)
+![Circuit Diagram](docs/stm32-pzem004t.jpg)
 
 *Complete circuit schematic showing STM32, PZEM-004T connections, and power supply.*
 
